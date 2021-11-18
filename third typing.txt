@@ -1,0 +1,414 @@
+#include <stdio.h>
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
+#include <Windows.h>
+#include <conio.h>
+#define total_word 100
+#define word_speed 40000
+
+char word[150][150] = { "pig","apple", "ant", "able", "book", "boot", "curl","snow","ect","live",
+"fox", "come", "trade", "sub", "obey", "soup", "glory", "rein", "unity", "cheek",
+"ah", "am", "at", "an", "as", "ax", "can", "fan", "pan", "van",
+"and", "but","also", "any", "tan", "ant", "might", "tight", "night", "right",
+"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+"hit", "sit", "dot", "hot", "not", "pot", "bag", "tag", "cut", "you",
+"all", "new", "now", "old", "see", "way", "who", "when", "what", "let",
+"boy", "did", "its", "act", "say", "she", "her", "mad", "odd", "saw",
+"zoo", "nap", "pal", "vet", "out", "day", "get", "ago", "aim", "air",
+"amp", "bee", "bar", "dry", "dye", "dna", "dig", "dew", "ear", "nose" };
+
+time_t startTime = 0;
+time_t endTime = 0;
+int gap;
+
+void design();
+void game_main();
+void help();
+void start();
+void top_score();
+void print_word();
+void scan_word();
+
+void gotoxy(int x, int y)
+{
+	COORD Pos = {x ,y};
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
+}
+
+int duplicate[150];
+int storage[150][3] = { 0 };
+int compare_xy[150][2];
+char scan[50];
+int topscr = 0; 
+int x, y;
+int i;
+int x2, y2;
+int z;
+int score1;
+int pos;
+int color;
+int color2;
+int g_k;
+
+
+int main()
+{
+	int n, m;
+	g_k = 0;
+	for (n = 0; n < 150; n++)
+	{
+		duplicate[n] = 0;
+		for (m = 0; m < 2; m++)
+		{
+			compare_xy[n][m] = 0;      
+			storage[n][m] = 0;
+			storage[n][2] = 0;
+		}
+	}
+	
+	int q;
+	srand((unsigned)time(NULL));
+	system("mode con cols=100 lines=30");
+	design();
+	start();              
+
+	while (1) {
+
+		gotoxy(58, 13);        
+		scanf_s("%d", &q);        
+		
+		switch (q)    
+		{
+
+		case 1: score1 = 0; 
+			startTime = clock(); 
+			game_main(); 
+			gap = 0; 
+			break;
+		case 2: 
+			top_score(); 
+			break;
+		case 3: 
+			help(); 
+			break;
+		case 4: 
+			exit(0);     
+			break;
+		default:
+			printf("올바른 키가 아닙니다, 다시 입력하세요!");
+			Sleep(1000);
+			start();
+			break;
+		}
+		
+	}
+	
+	return 0;
+}
+
+void design() 
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+	printf("----------------------------------------------------------------------------------------------------\n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("----------------------------------------------------------------------------------------------------\n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("                                                                                                    \n");
+	printf("----------------------------------------------------------------------------------------------------\n");
+}
+
+void start()
+{
+	
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+
+	system("cls");
+	design();
+
+	gotoxy(42, 6);
+	printf("!!타이핑 게임!!\n");
+
+	gotoxy(42, 7);
+	printf("(박종웅, 김수정)\n");
+
+	gotoxy(44, 8);
+	printf("1.게임시작\n");
+
+	gotoxy(44, 9);
+	printf("2.점수보기\n");
+
+	gotoxy(44, 10);
+	printf("3.도움말\n");
+
+	gotoxy(44, 11);
+	printf("4.게임종료\n");
+
+	gotoxy(42, 13);
+	printf("키를 입력하시오:\n");
+
+}
+
+void help()
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+	system("cls");
+	design();
+	
+	gotoxy(28, 6);
+	printf("무작위로 뜨는 단어들을 입력하여 제거하세요.\n");
+	
+	gotoxy(28, 8);
+	printf("단어의 색에 따라 점수가 다릅니다.\n");
+	
+	gotoxy(28, 10);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 1);
+	printf("파란색: 150점 ");
+
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
+	printf("초록색 : 200점 ");
+
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
+	printf("하늘색: 250점 ");
+
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+	printf("빨간색: 300점 ");
+
+	gotoxy(28, 12);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+	printf("20초동안 게임이 진행됩니다.");
+	gotoxy(28, 14);
+	printf("아무키나 누르면 메인메뉴로 돌아갑니다");
+	
+	z= _getch();
+	if (z != NULL)
+	{
+		start();
+	}
+}
+
+void top_score()
+{
+	system("cls");
+	design();
+
+	if (topscr < score1)
+	{
+		topscr = score1;
+	}
+	gotoxy(50, 7);
+	printf("최고점수 : %d", topscr);
+
+	gotoxy(40, 13);
+	printf("아무키나 누르면 메인 메뉴로 돌아갑니다.\n");
+
+	z = _getch();
+	if (z != NULL)
+	{
+		start();//
+	}
+}
+
+void game_main()
+{
+	system("cls");
+	design();
+	gotoxy(47, 6);
+	printf("!!(3초)!!");
+	Sleep(1000);
+
+	system("cls");
+	design();
+	gotoxy(47, 6);
+	printf("!!(2초)!!");
+	Sleep(1000);
+
+	system("cls");
+	design();
+	gotoxy(47, 6);
+	printf("!!(1초)!!");
+	Sleep(1000);
+
+	system("cls");
+	design();
+
+	
+	while (1)
+	{
+		print_word();
+		scan_word();
+	}
+	
+
+}
+
+void print_word()
+{
+	
+	int j, kk, ii;
+	int i_overlay;
+	kk = 1;
+	while (kk)
+	{
+		x = rand() % 94;      
+		y = (rand() % 20)+1;    
+		i = rand() % total_word;      
+		color = (rand() % 4)+ 1;       
+
+		i_overlay = 0;  
+		for(ii=0;ii<150;ii++)
+		{
+			if (y == compare_xy[ii][1] && fabs(x - compare_xy[ii][0]) < 20)   
+			{
+				i_overlay = 1;
+			}
+
+		}
+		if (i_overlay == 0)
+		{
+			kk = 0;
+		}
+	}
+	if (duplicate[i] != 1)
+	{
+		duplicate[i] = 1;     
+		   
+		compare_xy[g_k][0] = x;
+		compare_xy[g_k][1] = y;
+		g_k++;
+		gotoxy(x, y);
+
+		for (j = 0; j < 3; j++)
+		{
+			if (j == 0)
+			{
+				storage[i][j] = x;       
+			}
+			else if (j == 1)
+			{
+				storage[i][j] = y;      
+			}
+			else if (j == 2)
+			{
+				storage[i][j] = color;       
+			}
+		}
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);   
+		printf("%s ", &word[i][0]);       
+	}
+}
+
+void scan_word()
+{
+	int p = 0;
+	while (p < word_speed)
+	{	
+		p++;
+		
+		int scanc;
+		endTime = clock();   
+		gap = (int)(endTime - startTime) / (CLOCKS_PER_SEC);    
+
+		if (gap > 20)
+		{
+			
+			system("cls");             
+			design();
+			gotoxy(45, 6);
+			printf("---게 임 종 료---");
+			Sleep(1000);       
+			main();          
+			
+		}
+		if (_kbhit()) 
+		{
+			scanc = _getch(); 
+			if (scanc != 8 && scanc != 13)
+			{
+				gotoxy(5, 25);
+				scan[pos++] = scanc;
+				if (pos > 49)
+				{
+					pos = 49;
+				}
+				gotoxy(5, 25);
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+				printf("%s", scan);   
+			}
+			else if (scanc == 8) {    
+				gotoxy(1, 25);
+				printf("                                                  \n"); 
+				gotoxy(5, 25);
+				scan[--pos] = NULL;    
+
+				if (pos == -1)
+				{
+					pos = 0;
+				}
+				if (pos > 49)
+				{
+					pos = 49;
+				}
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+				printf("%s", scan);
+			}
+			else if (scanc == 13)
+			{
+				pos = 0;
+				gotoxy(1, 25);
+				printf("                                                  \n");
+
+				for (i = 0; i <= total_word; i++)        
+				{
+					if (!strcmp(scan, &word[i][0]))     
+					{   
+						x2 = storage[i][0];     
+						y2 = storage[i][1];     
+						color2 = storage[i][2]; 
+						gotoxy(x2, y2);
+						printf("          ");  
+						switch (color2)
+						{
+						case 1: score1 += 150; break;
+						case 2: score1 += 200; break;
+						case 3: score1 += 250; break;
+						case 4: score1 += 300; break;
+						default: break;
+						}
+						gotoxy(3, 23);
+						SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);     
+						printf("현재점수 :%d", score1);    
+					}
+				}
+				for (i = 0; i < 50; i++)
+				{
+					scan[i] = NULL;  
+				}
+			}
+		}
+	}
+}
+
